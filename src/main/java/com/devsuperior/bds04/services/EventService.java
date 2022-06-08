@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.devsuperior.bds04.dto.EventDTO;
 import com.devsuperior.bds04.entities.City;
@@ -21,6 +22,14 @@ public class EventService {
 		Page<Event> list = repository.findAll(pageble);
 		return list.map(x -> new EventDTO(x));
 	}
+	
+	@Transactional
+	public EventDTO insert(EventDTO dto) {
+		Event entity = new Event();
+		copyDtoToEntity(dto, entity);
+		entity = repository.save(entity);
+		return new EventDTO(entity);
+	}
 
 	private void copyDtoToEntity(EventDTO dto, Event entity) {
 		entity.setName(dto.getName());
@@ -28,6 +37,4 @@ public class EventService {
 		entity.setUrl(dto.getUrl());
 		entity.setCity(new City(dto.getCityId(), null));
 	}
-
-	
 }
